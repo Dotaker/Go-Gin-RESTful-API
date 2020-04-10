@@ -9,6 +9,9 @@ import (
 	"testing"
 	"time"
 
+	user "CRUD-Operation/models/user"
+
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -28,7 +31,9 @@ func TestGetAllUsersRoute(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/api/users", nil)
 	router.ServeHTTP(w, req)
 
+	users := user.Users{}
 	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, gin.H{"status": "success", "users": &users}, gin.H{"status": "success", "users": &users})
 }
 
 func TestCreateUserRoute(t *testing.T) {
@@ -40,5 +45,7 @@ func TestCreateUserRoute(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	router.ServeHTTP(w, req)
 
+	user := user.User{}
 	assert.Equal(t, 201, w.Code)
+	assert.Equal(t, gin.H{"status": "success", "user": &user}, gin.H{"status": "success", "user": &user})
 }
