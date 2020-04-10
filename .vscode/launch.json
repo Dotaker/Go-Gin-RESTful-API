@@ -7,7 +7,7 @@
         "name": "Launch",
         "type": "go",
         "request": "launch",
-        "mode": "remote",
-        "program": "/Users/quentin/go/src/gin-api/main.go"
+        "mode": "exec",
+        "program": "/Users/quentin/go/src/gin-api/CRUD-Operation"
     }]
 }
