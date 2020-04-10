@@ -1,16 +1,25 @@
 package routes_test
 
 import (
-	user "CRUD-Operation/models/user"
 	"CRUD-Operation/routes"
 	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/mgo.v2/bson"
 )
+
+type User struct {
+	ID        bson.ObjectId `bson:"_id"`
+	Name      string        `bson:"name"`
+	Address   string        `bson:"address"`
+	CreatedAt time.Time     `bson:"created_at"`
+	UpdatedAt time.Time     `bson:"updated_at"`
+}
 
 func TestGetAllUsersRoute(t *testing.T) {
 	router := routes.StartGin()
@@ -26,9 +35,8 @@ func TestCreateUserRoute(t *testing.T) {
 	router := routes.StartGin()
 
 	w := httptest.NewRecorder()
-	user := user.User{}
-	u, _ := json.Marshal(user)
-	req, _ := http.NewRequest("POST", "/api/users", bytes.NewBuffer(u))
+	reqBody, _ := json.Marshal(map[string]string{"Name": "Admin", "Address": "Home"})
+	req, _ := http.NewRequest("POST", "/api/users", bytes.NewBuffer(reqBody))
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	router.ServeHTTP(w, req)
 
