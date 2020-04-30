@@ -30,7 +30,7 @@ func GetAllUser(c *gin.Context) {
 	users := user.Users{}
 	err := db.C(UserCollection).Find(bson.M{}).All(&users)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": errNotExist.Error()})
+		c.JSON(http.StatusNotFound, gin.H{"status": "failed", "message": errNotExist.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success", "users": &users})
@@ -38,10 +38,11 @@ func GetAllUser(c *gin.Context) {
 
 // GetUser Endpoint
 func GetUser(c *gin.Context) {
-	var id bson.ObjectId = bson.ObjectIdHex(c.Param("id")) // Get Param
+	// Get Param
+	var id = bson.ObjectIdHex(c.Param("id"))
 	user, err := user.UserInfo(id, UserCollection)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": errInvalidID.Error()})
+		c.JSON(http.StatusNotFound, gin.H{"status": "failed", "message": errInvalidID.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success", "user": &user})
@@ -63,7 +64,7 @@ func CreateUser(c *gin.Context) {
 	user.UpdatedAt = time.Now()
 	err = db.C(UserCollection).Insert(user)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": errInsertionFailed.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": errInsertionFailed.Error()})
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{"status": "success", "user": &user})
@@ -74,11 +75,11 @@ func UpdateUser(c *gin.Context) {
 	// Get DB from Mongo Config
 	db := conn.GetMongoDB()
 	// Get Param
-	var id bson.ObjectId = bson.ObjectIdHex(c.Param("id"))
+	var id = bson.ObjectIdHex(c.Param("id"))
 	existingUser, err := user.UserInfo(id, UserCollection)
 	if err != nil {
-		//c.AbortWithError(http.StatusBadRequest, err)
-		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": errInvalidID.Error()})
+		//c.AbortWithError(http.StatusNotFound, err)
+		c.JSON(http.StatusNotFound, gin.H{"status": "failed", "message": errInvalidID.Error()})
 		return
 	}
 	// user := user.User{}
@@ -92,8 +93,8 @@ func UpdateUser(c *gin.Context) {
 	existingUser.UpdatedAt = time.Now()
 	err = db.C(UserCollection).Update(bson.M{"_id": &id}, existingUser)
 	if err != nil {
-		//c.AbortWithError(http.StatusBadRequest, err)
-		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": errUpdationFailed.Error()})
+		//c.AbortWithError(http.StatusInternalServerError, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "message": errUpdationFailed.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success", "user": &existingUser})
@@ -103,12 +104,13 @@ func UpdateUser(c *gin.Context) {
 func DeleteUser(c *gin.Context) {
 	// Get DB from Mongo Config
 	db := conn.GetMongoDB()
-	var id bson.ObjectId = bson.ObjectIdHex(c.Param("id")) // Get Param
+	// Get Param
+	var id = bson.ObjectIdHex(c.Param("id"))
 	err := db.C(UserCollection).Remove(bson.M{"_id": &id})
 	if err != nil {
-		//c.AbortWithError(http.StatusBadRequest, err)
-		c.JSON(http.StatusBadRequest, gin.H{"status": "failed", "message": errDeletionFailed.Error()})
+		//c.AbortWithError(http.StatusNotFound, err)
+		c.JSON(http.StatusNotFound, gin.H{"status": "failed", "message": errDeletionFailed.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User deleted successfully"})
+	c.JSON(http.StatusNoContent, gin.H{"status": "success", "message": "User deleted successfully"})
 }
