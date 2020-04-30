@@ -109,6 +109,7 @@ func TestUpdateArticleRoute(t *testing.T) {
 	assert.Equal(t, 200, w.Code)
 }
 
+/* Key test */
 func TestDeleteArticleRoute(t *testing.T) {
 	router := routes.StartGin()
 
