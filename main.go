@@ -6,5 +6,5 @@ import (
 
 func main() {
 	router := routes.StartGin()
-	router.Run("127.0.0.1:8081")
+	router.Run("qbtl.fr:8081")
 }
